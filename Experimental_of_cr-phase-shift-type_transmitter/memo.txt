@@ -1,0 +1,5 @@
+differentiation(微分) 934Hz
+integration(積分) 5.75kHz
+
+CR位相シフト発信器[D-8 c1815]
+電圧計[kenwood vt-171e]
