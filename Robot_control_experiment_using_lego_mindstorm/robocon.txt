@@ -1,0 +1,105 @@
+mutex moveMutex;
+
+#define POW_R	45
+#define POW_L	60
+#define MOVE_TIME1	1
+#define MOVE_TIME	3000
+#define TURN45_TIME	500
+#define TH_LIGHT	40
+#define TH_DIST	30
+#define POW		50
+
+void forward(int time)
+{
+	OnFwd(OUT_A,POW);
+	Wait(time);
+}
+
+void turn_right(int time)
+{
+	Off(OUT_A);
+	OnFwd(OUT_C,POW);
+	Wait(time);
+}
+
+void turn_left(int time)
+{
+	OnFwd(OUT_A,POW);
+	Off(OUT_C);
+	Wait(time);
+}
+
+void curve(int time)
+{
+	OnFwd(OUT_A,POW_R);
+	OnFwd(OUT_C,POW_L);
+	Wait(time);
+}
+
+task line_trace()
+{
+	while(true){
+		if(Sensor(IN_2) > TH_LIGHT){
+			if(Sensor(IN_3) > TH_LIGHT){
+				Acquire(moveMutex);
+				forward(MOVE_TIME1);
+				Release(moveMutex);
+			}else{
+				Acquire(moveMutex);
+				turn_left(MOVE_TIME1);
+				Release(moveMutex);
+			}
+		}else{
+			Acquire(moveMutex);
+			turn_right(MOVE_TIME1);
+			Release(moveMutex);
+		}
+	}
+}
+
+task collision_avoidance()
+{
+	while(true){
+		until(SensorUS(IN_4) < TH_DIST);
+		Acquire(moveMutex);
+		turn_left(TURN45_TIME);
+		curve(MOVE_TIME);
+		Release(moveMutex);
+	}
+}
+
+task rotate_arm()
+{
+	while(true){
+		if(Sensor(IN_1) == 1){
+			RotateMotor(OUT_B,POW,360);
+		}
+	}
+}
+
+task display()
+{
+	int dist,data_2,data_3;
+	while(true){
+		data_2=Sensor(IN_2);
+		data_3=Sensor(IN_3);
+		dist=SensorUS(IN_4);
+		NumOut(0,56,data_2);
+		NumOut(0,40,data_3);
+		NumOut(0,24,dist);
+	}
+}
+
+task main()
+{
+	SetSensorTouch(IN_1);
+	SetSensorLight(IN_2);
+	SetSensorLight(IN_3);
+	SetSensorLowspeed(IN_4);
+	
+	Wait(500);
+	OnFwd(OUT_AC,POW);
+	Wait(500);
+	
+	Precedes(line_trace,collision_avoidance,rotate_arm,display);
+}

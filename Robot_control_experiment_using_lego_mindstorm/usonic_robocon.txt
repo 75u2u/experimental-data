@@ -1,0 +1,36 @@
+#define TH_DIST	30
+#define MOVE_TIME	3000
+#define TURN45_TIME	500
+#define POW			50
+#define POW_R	45
+#define POW_L	60
+
+void turn_left(int time)
+{
+	OnFwd(OUT_A,POW);
+	Off(OUT_C);
+	Wait(time);
+}
+
+void curve(int time)
+{
+	OnRev(OUT_A,POW_R);
+	OnRev(OUT_C,POW_L);
+	Wait(time);
+}
+
+void collision_avoidance()
+{
+	while(true){
+		until(SensorUS(IN_4) < TH_DIST);
+		turn_left(TURN45_TIME);
+		curve(MOVE_TIME);
+	}
+}
+
+
+task main()
+{
+	SetSensorLowspeed(IN_4);
+	collision_avoidance();
+}

@@ -1,0 +1,7 @@
+task main()
+{
+	while(true){
+		PlayFile("Woops.rso");
+		Wait(1000);
+	}
+}

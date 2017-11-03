@@ -1,0 +1,46 @@
+#define MOVE_TIME	1
+#define TH_LIGHT 35
+#define POW   30
+
+void forward(int time)
+{
+	OnRev(OUT_AC,POW);
+	Wait(time);
+}
+
+void turn_left(int time)
+{
+	OnFwd(OUT_A,POW);
+	Off(OUT_C);
+	Wait(time);
+}
+
+void turn_right(int time)
+{
+	Off(OUT_A);
+	OnFwd(OUT_C,POW);
+	Wait(time);
+}
+
+void line_trace()
+{
+	while(true){
+		if(Sensor(IN_2) > TH_LIGHT){
+			if(Sensor(IN_3) > TH_LIGHT){
+				forward(MOVE_TIME);
+			}else{
+				turn_right(MOVE_TIME);
+			}
+		}else{
+			turn_left(MOVE_TIME);
+		}
+	}
+}
+
+task main()
+{
+	SetSensorLight(IN_2);
+	SetSensorLight(IN_3);
+
+	line_trace();
+}

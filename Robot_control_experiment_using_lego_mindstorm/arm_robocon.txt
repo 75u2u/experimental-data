@@ -1,0 +1,18 @@
+#define POW		50
+
+void rotate_arm()
+{
+	RotateMotor(OUT_B,POW,-180);
+}
+
+task main()
+{
+	SetSensorTouch(IN_1);
+	
+	while(true){
+		if(Sensor(IN_1) == 1){
+			rotate_arm();
+      rotate_arm();
+		}
+	}
+}

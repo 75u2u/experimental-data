@@ -1,0 +1,50 @@
+#define POW   40
+#define TURN90	100
+mutex moveMutex;
+
+void turn_right(int time)
+{
+	Off(OUT_A);
+	OnFwd(OUT_C,POW);
+	Wait(time);
+}
+
+void turn_left(int time)
+{
+	OnFwd(OUT_A,POW);
+	Off(OUT_C);
+	Wait(time);
+}
+
+task line_trace()
+{
+	while(true){
+		if(Sensor(IN_3) > 36){
+			Acquire(moveMutex);
+			turn_right(1);
+			Release(moveMutex);
+		}else{
+			Acquire(moveMutex);
+			turn_left(1);
+			Release(moveMutex);
+		}
+	}
+}
+
+task collision_avoidance()
+{
+	while(true){
+		if(Sensor(IN_4) < 20){
+			Acquire(moveMutex);
+			turn_right(TURN90);
+			Release(moveMutex);
+		}
+	}
+}
+
+task main()
+{
+	SetSensorLight(IN_3);
+	SetSensorLowspeed(IN_4);
+	Precedes(line_trace,collision_avoidance);
+}

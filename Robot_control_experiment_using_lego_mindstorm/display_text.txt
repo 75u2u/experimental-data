@@ -1,0 +1,12 @@
+task main()
+{
+	SetSensorLowspeed(IN_1);
+	int dist;
+
+	while(true){
+		dist = SensorUS(IN_1);
+		TextOut(15, 15, "cm", true);
+		NumOut(15, 30, dist);
+		//ClearScreen();
+	}
+}

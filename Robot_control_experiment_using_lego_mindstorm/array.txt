@@ -1,0 +1,99 @@
+#define TH_SOUND	40
+#define MOVE_TIME	1000
+#define CHECK_TIME	1000
+#define POW			75
+
+int nxt_array[100];
+
+void forward(int time)
+{
+	OnFwd(OUT_A,POW);
+	Wait(time);
+}
+
+void turn_right(int time)
+{
+	Off(OUT_A);
+	OnFwd(OUT_C,POW);
+	Wait(time);
+}
+
+void turn_left(int time)
+{
+	OnFwd(OUT_A,POW);
+	Off(OUT_C);
+	Wait(time);
+}
+
+int nxt_rec()
+{
+	int i=0;
+	
+	while(Sensor(IN_3) < TH_SOUND){
+		if(Sensor(IN_1) == 1){
+			if(Sensor(IN_2) == 1){
+				nxt_array[i]=1;
+				i++;
+				PlayFile("Woops.rso");
+				Wait(CHECK_TIME);
+			}else{
+				nxt_array[i]=2;
+				i++;
+				PlayFile("Woops.rso");
+				Wait(CHECK_TIME);
+			}
+		}else{
+			if(Sensor(IN_2) == 1){
+				nxt_array[i]=3;
+				i++;
+				PlayFile("Woops.rso");
+				Wait(CHECK_TIME);
+			}
+		}
+	}
+	
+	PlayFile("! Startup.rso");
+	Wait(CHECK_TIME);
+	
+	return i;
+}
+
+void nxt_play(int count)
+{
+	int i=1;
+	until(Sensor(IN_3) > TH_SOUND);
+	
+	for(i=0; i<count; i++){
+		switch(nxt_array[i]){
+			case 1:
+				forward(MOVE_TIME);
+				break;
+			
+			case 2:
+				turn_right(MOVE_TIME);
+				break;
+			
+			case 3:
+				turn_left(MOVE_TIME);
+				break;
+		}
+	}
+	
+	Off(OUT_AC);
+	PlayFile("Woops.rso");
+	Wait(CHECK_TIME);
+}
+
+task main()
+{
+	SetSensorTouch(IN_1);
+	SetSensorTouch(IN_2);
+	SetSensorSound(IN_3);
+	
+	int count;
+	
+	Wait(CHECK_TIME);
+	
+	count=nxt_rec();
+	nxt_play(count);
+}

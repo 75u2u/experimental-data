@@ -1,0 +1,43 @@
+#define TURN_RIGHT	100
+#define POW			75
+
+void turn_right(int time)
+{
+	Off(OUT_A);
+	OnFwd(OUT_C,POW);
+	Wait(time);
+}
+
+void turn_left(int time)
+{
+	OnFwd(OUT_A,POW);
+	Off(OUT_C);
+	Wait(time);
+}
+
+task line_trace()
+{
+	while(true){
+		if(Sensor(IN_3) > 36){
+			turn_right(1);
+		}else{
+			turn_left(1);
+		}
+	}
+}
+
+task collision_avoidance()
+{
+	while(true){
+		if(Sensor(IN_4) > 25){
+			turn_right(TURN_RIGHT);
+		}
+	}
+}
+
+task main()
+{
+	SetSensorLight(IN_3);
+	SetSensorLowspeed(IN_4);
+	Precedes(line_trace,collision_avoidance);
+}

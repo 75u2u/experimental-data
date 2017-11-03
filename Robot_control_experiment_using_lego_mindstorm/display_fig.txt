@@ -1,0 +1,12 @@
+task main()
+{
+	while(true){
+		ClearScreen();
+		GraphicOut(22,0,"faceopen.ric");
+		Wait(1000);
+		
+		ClearScreen();
+		CircleOut(50, 32, 30);
+		Wait(1000);
+	}
+}

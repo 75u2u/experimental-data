@@ -1,0 +1,11 @@
+task main()
+{
+	SetSensorSound(IN_2);
+
+	while(true){
+		until(Sensor(IN_2) > 40);
+		OnFwd(OUT_AC, 75);
+		Wait(500);
+		Off(OUT_AC);
+	}
+}
